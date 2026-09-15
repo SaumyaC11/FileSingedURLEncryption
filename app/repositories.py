@@ -8,9 +8,11 @@ from app.models import AuditEvent, FileMetadata, SignedURLMapping
 
 
 class FileMetadataRepository:
+    # Stores the DB session used for all queries on this repository.
     def __init__(self, db: Session) -> None:
         self._db = db
 
+    # Inserts a new file metadata record and returns the persisted row.
     def create(
         self,
         *,
@@ -34,14 +36,17 @@ class FileMetadataRepository:
         self._db.refresh(record)
         return record
 
+    # Fetches a file metadata record by its ID, or None if it doesn't exist.
     def get(self, file_id: uuid.UUID) -> FileMetadata | None:
         return self._db.get(FileMetadata, file_id)
 
 
 class SignedURLRepository:
+    # Stores the DB session used for all queries on this repository.
     def __init__(self, db: Session) -> None:
         self._db = db
 
+    # Inserts a new signed URL mapping and returns the persisted row.
     def create(
         self,
         *,
@@ -62,6 +67,7 @@ class SignedURLRepository:
         self._db.refresh(record)
         return record
 
+    # Returns the most recently issued, still-unexpired signed URL for a file, if any.
     def get_active(self, file_id: uuid.UUID) -> SignedURLMapping | None:
         stmt = (
             select(SignedURLMapping)
@@ -75,9 +81,11 @@ class SignedURLRepository:
 
 
 class AuditEventRepository:
+    # Stores the DB session used for all queries on this repository.
     def __init__(self, db: Session) -> None:
         self._db = db
 
+    # Records an audit event for a signed URL being issued.
     def record_signed_url_issued(
         self,
         *,

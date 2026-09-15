@@ -13,6 +13,7 @@ class Base(DeclarativeBase):
     pass
 
 
+# Yields a DB session for a request and closes it afterwards.
 def get_db() -> Iterator[Session]:
     db = SessionLocal()
     try:

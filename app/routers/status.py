@@ -10,6 +10,7 @@ from app.services.status_service import FileNotFoundError, NotFileOwnerError, St
 router = APIRouter(tags=["status"])
 
 
+# Returns a file's metadata and its active signed URL, if the caller owns it.
 @router.get("/v1/status/{file_id}", response_model=FileStatusResponse)
 def get_file_status(
     file_id: uuid.UUID,

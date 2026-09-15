@@ -24,6 +24,7 @@ class Settings(BaseSettings):
     base_url: str = "http://localhost:8000"
 
 
+# Returns a cached Settings instance so env vars are parsed only once.
 @lru_cache
 def get_settings() -> Settings:
     return Settings()

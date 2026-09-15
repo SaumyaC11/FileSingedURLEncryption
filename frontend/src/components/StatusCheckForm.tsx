@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import { getFileStatus } from "../api/fileService";
 import type { FileStatusResponse } from "../api/fileService";
 
+// Formats a byte count into a human-readable size string (B/KB/MB/GB).
 function formatBytes(byteLength: number): string {
   if (byteLength < 1024) return `${byteLength} B`;
   const units = ["KB", "MB", "GB"];
@@ -19,12 +20,14 @@ interface StatusCheckFormProps {
   userId: string;
 }
 
+// Renders a form that looks up a file's status by ID for the current user.
 export function StatusCheckForm({ userId }: StatusCheckFormProps) {
   const [fileId, setFileId] = useState("");
   const [isChecking, setIsChecking] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<FileStatusResponse | null>(null);
 
+  // Validates the entered file ID and user ID, then fetches the file's status.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!fileId.trim()) {

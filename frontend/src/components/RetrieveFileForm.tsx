@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { FormEvent } from "react";
 import { retrieveFile } from "../api/fileService";
 
+// Triggers a browser download of a blob under the given filename.
 function triggerBrowserDownload(blob: Blob, filename: string) {
   const objectUrl = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -11,12 +12,14 @@ function triggerBrowserDownload(blob: Blob, filename: string) {
   URL.revokeObjectURL(objectUrl);
 }
 
+// Renders a form that downloads a file given its pasted signed URL.
 export function RetrieveFileForm() {
   const [signedUrl, setSignedUrl] = useState("");
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  // Validates the pasted signed URL and downloads the file it points to.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!signedUrl.trim()) {

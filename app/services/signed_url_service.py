@@ -18,6 +18,7 @@ class ActiveSignedURLExistsError(Exception):
 
 
 class SignedURLResult:
+    # Stores the generated signed URL and its expiry timestamp.
     def __init__(self, signed_url: str, expires_at: datetime) -> None:
         self.signed_url = signed_url
         self.expires_at = expires_at
@@ -29,6 +30,7 @@ class SignedURLService:
     Each file may have at most one active (non-expired) signed URL at a time.
     """
 
+    # Stores the signer, repositories, and base URL used to build signed links.
     def __init__(
         self,
         signer: SignedURLSigner,
@@ -43,6 +45,7 @@ class SignedURLService:
         self._audit_repository = audit_repository
         self._base_url = base_url.rstrip("/")
 
+    # Validates ownership and uniqueness, then issues and records a new signed URL.
     def generate(
         self,
         *,

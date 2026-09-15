@@ -14,6 +14,7 @@ from app.services.signed_url_service import (
 router = APIRouter(tags=["signed-url"])
 
 
+# Issues a time-limited signed URL for a file owned by the requesting user.
 @router.post("/v1/generateSignedURL", response_model=GenerateSignedURLResponse)
 def generate_signed_url(
     request: GenerateSignedURLRequest,

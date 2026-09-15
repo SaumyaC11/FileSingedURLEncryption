@@ -8,10 +8,12 @@ from app.services.file_storage import FileStorage
 class UploadService:
     """Orchestrates persisting an uploaded file's bytes and its metadata."""
 
+    # Stores the file storage and metadata repository used during upload.
     def __init__(self, storage: FileStorage, file_repository: FileMetadataRepository) -> None:
         self._storage = storage
         self._file_repository = file_repository
 
+    # Saves the file's bytes to storage and persists its metadata record.
     def upload(
         self,
         *,

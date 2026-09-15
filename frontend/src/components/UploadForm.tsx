@@ -9,12 +9,14 @@ interface UploadFormProps {
   onUploaded: (file: TrackedFile) => void;
 }
 
+// Renders a form that uploads a file and immediately requests a signed URL for it.
 export function UploadForm({ userId, onUploaded }: UploadFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [ttlSeconds, setTtlSeconds] = useState(TTL_PRESETS[0].seconds);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Uploads the selected file, then generates a signed URL for it, reporting the result.
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = event.currentTarget;

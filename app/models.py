@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 
+# Returns the current UTC time for use as a column default.
 def _utcnow() -> datetime:
     return datetime.now(timezone.utc)
 

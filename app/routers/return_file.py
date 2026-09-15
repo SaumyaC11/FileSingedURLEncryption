@@ -13,7 +13,8 @@ from app.services.file_retrieval_service import (
 
 router = APIRouter(tags=["return-file"])
 
-# for returning the file 
+# for returning the file
+# Validates a signed token and streams back the file it points to.
 @router.get("/v1/returnFile")
 def return_file(
     token: Annotated[str, Query()],

@@ -12,10 +12,12 @@ class FileNotFoundError(Exception):
 class FileRetrievalService:
     """Validates a signed token and resolves it to the stored file to serve."""
 
+    # Stores the signer and file repository used to resolve tokens.
     def __init__(self, signer: SignedURLSigner, file_repository: FileMetadataRepository) -> None:
         self._signer = signer
         self._file_repository = file_repository
 
+    # Verifies the token and returns the file metadata it refers to.
     def resolve(self, token: str) -> FileMetadata:
         file_id = self._signer.unsign(token)
         metadata = self._file_repository.get(file_id)

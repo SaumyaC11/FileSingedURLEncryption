@@ -26,6 +26,7 @@ export class ApiError extends Error {
   }
 }
 
+// Extracts a human-readable error message from a failed response body.
 async function parseErrorDetail(response: Response): Promise<string> {
   try {
     const body = await response.json();
@@ -35,6 +36,7 @@ async function parseErrorDetail(response: Response): Promise<string> {
   }
 }
 
+// Fetches a JSON API endpoint, throwing an ApiError on a non-OK response.
 async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, init);
   if (!response.ok) {
@@ -43,6 +45,7 @@ async function requestJson<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+// Uploads a file for a user and returns the assigned file ID.
 export function uploadFile(userId: string, file: File): Promise<UploadResponse> {
   const formData = new FormData();
   formData.append("user_id", userId);
@@ -54,6 +57,7 @@ export function uploadFile(userId: string, file: File): Promise<UploadResponse> 
   });
 }
 
+// Requests a time-limited signed URL for a file on behalf of its owner.
 export function generateSignedUrl(
   fileId: string,
   ttlSeconds: number,
@@ -70,6 +74,7 @@ export function generateSignedUrl(
   });
 }
 
+// Fetches a file's metadata and active signed URL status for a given user.
 export function getFileStatus(
   fileId: string,
   requestingUserId: string,
@@ -90,6 +95,7 @@ const FILENAME_STAR = /filename\*=[^']*''([^;]+)/i;
 const FILENAME_QUOTED = /filename="([^"]+)"/i;
 const FILENAME_BARE = /filename=([^;]+)/i;
 
+// Extracts the filename from a response's Content-Disposition header.
 function filenameFromResponse(response: Response): string {
   const header = response.headers.get("Content-Disposition") ?? "";
 
@@ -113,10 +119,12 @@ function filenameFromResponse(response: Response): string {
 
 const SIGNED_URL_PATTERN = /^https?:\/\/.+\/v1\/returnFile\?.*token=.+/i;
 
+// Checks whether a string looks like a valid return-file signed URL.
 export function isSignedUrl(value: string): boolean {
   return SIGNED_URL_PATTERN.test(value.trim());
 }
 
+// Downloads the file behind a signed URL, mapping error statuses to friendly messages.
 export async function retrieveFile(signedUrl: string): Promise<RetrievedFile> {
   if (!isSignedUrl(signedUrl)) {
     throw new ApiError(

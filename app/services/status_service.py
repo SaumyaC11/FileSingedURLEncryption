@@ -13,6 +13,7 @@ class NotFileOwnerError(Exception):
 
 
 class FileStatus:
+    # Extracts the display fields for a file's status from its metadata.
     def __init__(self, metadata: FileMetadata, signed_url: str | None) -> None:
         self.filename = metadata.filename
         self.byte_length = metadata.byte_length
@@ -23,6 +24,7 @@ class FileStatus:
 class StatusService:
     """Looks up a file's metadata and its currently active signed URL, if any."""
 
+    # Stores the file and signed URL repositories used to look up status.
     def __init__(
         self,
         file_repository: FileMetadataRepository,
@@ -31,6 +33,7 @@ class StatusService:
         self._file_repository = file_repository
         self._signed_url_repository = signed_url_repository
 
+    # Validates ownership and returns the file's metadata plus its active signed URL.
     def get_status(self, *, file_id: uuid.UUID, requesting_user_id: str) -> FileStatus:
         metadata = self._file_repository.get(file_id)
         if metadata is None:

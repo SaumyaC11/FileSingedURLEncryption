@@ -9,6 +9,7 @@ from app.services.upload_service import UploadService
 router = APIRouter(tags=["upload"])
 
 
+# Reads the uploaded file's bytes and persists them via the upload service.
 @router.post("/v1/upload", response_model=UploadResponse)
 async def upload_file(
     user_id: Annotated[str, Form(min_length=1)],

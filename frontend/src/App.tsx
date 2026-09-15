@@ -6,10 +6,12 @@ import { RetrieveFileForm } from "./components/RetrieveFileForm";
 import { StatusCheckForm } from "./components/StatusCheckForm";
 import type { TrackedFile } from "./types";
 
+// Renders the file vault page: user ID entry, upload, file list, retrieval, and status check.
 function App() {
   const [userId, setUserId] = useState("");
   const [files, setFiles] = useState<TrackedFile[]>([]);
 
+  // Prepends a newly uploaded file to the tracked files list.
   function handleUploaded(file: TrackedFile) {
     setFiles((prev) => [file, ...prev]);
   }
