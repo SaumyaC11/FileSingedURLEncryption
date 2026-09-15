@@ -27,6 +27,7 @@ jobs:
   backend-integration-tests:
     runs-on: ubuntu-latest
     needs: backend-unit-tests
+    environment: production
     steps:
       - uses: actions/checkout@v4
 
