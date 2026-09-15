@@ -3,7 +3,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
-
+# return tyoes of the APIs 
+# uploading the document return the file id which is uuid 
 class UploadResponse(BaseModel):
     file_id: uuid.UUID
 

@@ -174,6 +174,15 @@ button:disabled {
   padding: 0.5rem 0.75rem;
 }
 
+.success {
+  color: #15803d;
+  margin: 0;
+  font-size: 0.85rem;
+  background: #f0fdf4;
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+}
+
 .empty {
   color: #94a3b8;
   margin: 0;
@@ -236,19 +245,37 @@ button:disabled {
   padding: 0.65rem 0.85rem;
 }
 
-.signed-url-result a {
+.signed-url-text {
   word-break: break-all;
   color: #4338ca;
-  font-weight: 600;
-  font-size: 0.9rem;
-  text-decoration: none;
-}
-
-.signed-url-result a:hover {
-  text-decoration: underline;
+  font-weight: 500;
+  font-size: 0.82rem;
+  font-family: "SF Mono", Menlo, monospace;
 }
 
 .expires-at {
   font-size: 0.78rem;
   color: #64748b;
+}
+
+.status-result {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.9rem;
+  color: #1e293b;
+}
+
+.status-label {
+  color: #64748b;
+  font-weight: 500;
 }

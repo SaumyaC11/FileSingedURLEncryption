@@ -1,6 +1,7 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
-import { uploadFile } from "../api/fileService";
+import { generateSignedUrl, uploadFile } from "../api/fileService";
+import { TTL_PRESETS } from "../constants";
 import type { TrackedFile } from "../types";
 
 interface UploadFormProps {
@@ -10,6 +11,7 @@ interface UploadFormProps {
 
 export function UploadForm({ userId, onUploaded }: UploadFormProps) {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [ttlSeconds, setTtlSeconds] = useState(TTL_PRESETS[0].seconds);
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -30,7 +32,18 @@ export function UploadForm({ userId, onUploaded }: UploadFormProps) {
     setError(null);
     try {
       const { file_id } = await uploadFile(userId, selectedFile);
-      onUploaded({ fileId: file_id, filename: selectedFile.name });
+      const trackedFile: TrackedFile = { fileId: file_id, filename: selectedFile.name };
+
+      try {
+        const signed = await generateSignedUrl(file_id, ttlSeconds, userId);
+        trackedFile.signedUrl = signed.signed_url;
+        trackedFile.expiresAt = signed.expires_at;
+      } catch (err) {
+        trackedFile.error =
+          err instanceof Error ? err.message : "File uploaded, but the signed URL could not be created.";
+      }
+
+      onUploaded(trackedFile);
       setSelectedFile(null);
       form.reset();
     } catch (err) {
@@ -51,6 +64,23 @@ export function UploadForm({ userId, onUploaded }: UploadFormProps) {
           disabled={isUploading}
         />
       </label>
+
+      <div>
+        <label htmlFor="ttl-select">Signed link expires in</label>
+        <select
+          id="ttl-select"
+          value={ttlSeconds}
+          onChange={(event) => setTtlSeconds(Number(event.target.value))}
+          disabled={isUploading}
+        >
+          {TTL_PRESETS.map((preset) => (
+            <option key={preset.seconds} value={preset.seconds}>
+              {preset.label}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <button type="submit" disabled={isUploading}>
         {isUploading ? "Uploading..." : "Upload"}
       </button>

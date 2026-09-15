@@ -2,6 +2,8 @@ import { useState } from "react";
 import "./App.css";
 import { UploadForm } from "./components/UploadForm";
 import { FileRow } from "./components/FileRow";
+import { RetrieveFileForm } from "./components/RetrieveFileForm";
+import { StatusCheckForm } from "./components/StatusCheckForm";
 import type { TrackedFile } from "./types";
 
 function App() {
@@ -10,12 +12,6 @@ function App() {
 
   function handleUploaded(file: TrackedFile) {
     setFiles((prev) => [file, ...prev]);
-  }
-
-  function handleFileChange(fileId: string, patch: Partial<TrackedFile>) {
-    setFiles((prev) =>
-      prev.map((file) => (file.fileId === fileId ? { ...file, ...patch } : file)),
-    );
   }
 
   return (
@@ -45,16 +41,15 @@ function App() {
         ) : (
           <ul className="file-list">
             {files.map((file) => (
-              <FileRow
-                key={file.fileId}
-                userId={userId}
-                file={file}
-                onChange={handleFileChange}
-              />
+              <FileRow key={file.fileId} file={file} />
             ))}
           </ul>
         )}
       </div>
+
+      <RetrieveFileForm />
+
+      <StatusCheckForm userId={userId} />
     </main>
   );
 }

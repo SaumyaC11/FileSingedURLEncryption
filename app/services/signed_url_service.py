@@ -9,6 +9,10 @@ class FileNotFoundError(Exception):
     """Raised when generating a signed URL for a file that does not exist."""
 
 
+class NotFileOwnerError(Exception):
+    """Raised when a non-owner requests a signed URL for a file."""
+
+
 class ActiveSignedURLExistsError(Exception):
     """Raised when a file already has a signed URL that has not yet expired."""
 
@@ -46,8 +50,12 @@ class SignedURLService:
         ttl_seconds: int,
         requesting_user_id: str,
     ) -> SignedURLResult:
-        if self._file_repository.get(file_id) is None:
+        file_metadata = self._file_repository.get(file_id)
+        if file_metadata is None:
             raise FileNotFoundError(f"File {file_id} does not exist")
+
+        if file_metadata.user_id != requesting_user_id:
+            raise NotFileOwnerError(f"User {requesting_user_id} does not own file {file_id}")
 
         if self._signed_url_repository.get_active(file_id) is not None:
             raise ActiveSignedURLExistsError(

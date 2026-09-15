@@ -77,3 +77,73 @@ export function getFileStatus(
   const params = new URLSearchParams({ requesting_user_id: requestingUserId });
   return requestJson<FileStatusResponse>(`/v1/status/${fileId}?${params.toString()}`);
 }
+
+export interface RetrievedFile {
+  blob: Blob;
+  filename: string;
+}
+
+// RFC 5987 form, used whenever the filename isn't URL-safe (spaces, unicode, etc.):
+// e.g. filename*=utf-8''My%20Report%20%28final%29.pdf
+const FILENAME_STAR = /filename\*=[^']*''([^;]+)/i;
+// Simple form, used only when the filename is already URL-safe: filename="report.pdf"
+const FILENAME_QUOTED = /filename="([^"]+)"/i;
+const FILENAME_BARE = /filename=([^;]+)/i;
+
+function filenameFromResponse(response: Response): string {
+  const header = response.headers.get("Content-Disposition") ?? "";
+
+  const starMatch = header.match(FILENAME_STAR);
+  if (starMatch) {
+    try {
+      return decodeURIComponent(starMatch[1].trim());
+    } catch {
+      return starMatch[1].trim();
+    }
+  }
+
+  const quotedMatch = header.match(FILENAME_QUOTED);
+  if (quotedMatch) return quotedMatch[1];
+
+  const bareMatch = header.match(FILENAME_BARE);
+  if (bareMatch) return bareMatch[1].trim();
+
+  return "download";
+}
+
+const SIGNED_URL_PATTERN = /^https?:\/\/.+\/v1\/returnFile\?.*token=.+/i;
+
+export function isSignedUrl(value: string): boolean {
+  return SIGNED_URL_PATTERN.test(value.trim());
+}
+
+export async function retrieveFile(signedUrl: string): Promise<RetrievedFile> {
+  if (!isSignedUrl(signedUrl)) {
+    throw new ApiError(
+      "That doesn't look like a signed URL. Paste the full link you received (not a file ID).",
+      0,
+    );
+  }
+
+  let response: Response;
+  try {
+    response = await fetch(signedUrl);
+  } catch {
+    throw new ApiError("Could not reach the file service. Check the URL and try again.", 0);
+  }
+
+  if (response.status === 401) {
+    throw new ApiError("This signed URL is invalid.", response.status);
+  }
+  if (response.status === 410) {
+    throw new ApiError("This signed URL has expired. Its TTL is no longer valid.", response.status);
+  }
+  if (response.status === 404) {
+    throw new ApiError("The file behind this URL no longer exists.", response.status);
+  }
+  if (!response.ok) {
+    throw new ApiError(await parseErrorDetail(response), response.status);
+  }
+
+  return { blob: await response.blob(), filename: filenameFromResponse(response) };
+}

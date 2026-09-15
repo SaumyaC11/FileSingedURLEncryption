@@ -13,7 +13,7 @@ from app.services.file_retrieval_service import (
 
 router = APIRouter(tags=["return-file"])
 
-
+# for returning the file 
 @router.get("/v1/returnFile")
 def return_file(
     token: Annotated[str, Query()],
@@ -27,7 +27,7 @@ def return_file(
         raise HTTPException(status_code=status.HTTP_410_GONE, detail=str(exc)) from exc
     except FileNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
-
+    # return file storage path the name of the file and the metadata
     return FileResponse(
         path=metadata.storage_path,
         filename=metadata.filename,
