@@ -3,7 +3,7 @@ from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-
+# config setting of postgres SQL lik the url where the files will be stored
 class Settings(BaseSettings):
     """Application configuration, loaded from environment variables / .env."""
 
