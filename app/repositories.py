@@ -1,6 +1,7 @@
 import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models import AuditEvent, FileMetadata, SignedURLMapping
@@ -60,6 +61,17 @@ class SignedURLRepository:
         self._db.commit()
         self._db.refresh(record)
         return record
+
+    def get_active(self, file_id: uuid.UUID) -> SignedURLMapping | None:
+        stmt = (
+            select(SignedURLMapping)
+            .where(
+                SignedURLMapping.file_id == file_id,
+                SignedURLMapping.expires_at > datetime.now(timezone.utc),
+            )
+            .order_by(SignedURLMapping.issued_at.desc())
+        )
+        return self._db.scalars(stmt).first()
 
 
 class AuditEventRepository:

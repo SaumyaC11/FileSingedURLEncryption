@@ -4,7 +4,11 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.dependencies import get_signed_url_service
 from app.schemas import GenerateSignedURLRequest, GenerateSignedURLResponse
-from app.services.signed_url_service import FileNotFoundError, SignedURLService
+from app.services.signed_url_service import (
+    ActiveSignedURLExistsError,
+    FileNotFoundError,
+    SignedURLService,
+)
 
 router = APIRouter(tags=["signed-url"])
 
@@ -22,6 +26,8 @@ def generate_signed_url(
         )
     except FileNotFoundError as exc:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=str(exc)) from exc
+    except ActiveSignedURLExistsError as exc:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=str(exc)) from exc
 
     return GenerateSignedURLResponse(
         signed_url=result.signed_url,

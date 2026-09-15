@@ -17,3 +17,10 @@ class GenerateSignedURLRequest(BaseModel):
 class GenerateSignedURLResponse(BaseModel):
     signed_url: str
     expires_at: datetime
+
+
+class FileStatusResponse(BaseModel):
+    filename: str
+    byte_length: int
+    uploaded_at: datetime
+    signed_url: str | None = None
